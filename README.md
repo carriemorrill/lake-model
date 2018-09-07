@@ -9,7 +9,7 @@ This lake energy and water balance model originates from the 1-dimensional lake 
 
 A file, <lake.inc>, includes parameter definitions and initial condition specifications. 
 
-Lake-specific parameters include: the lake’s latitude, longitude (needed only if meteorological inputs are sub-daily), local time relative to Greenwich Mean Time (needed only if meteorological inputs are sub-daily), maximum number of lake layers (i.e., at the sill elevation with default lake layers being 0.1 m thick), the area of the drainage basin when lake depth equals zero (hectares or 10^4 m^2), lake area by layer from top to bottom (hectares or 10^4 m^2), neutral drag coefficient (unitless), shortwave extinction coefficient (1/meters), albedo of melting and non-melting snow (unitless), number of sediment layers (count), albedo of lake sediment (unitless), specific heat of sediment (J/m3K), and thermal conductivity of sediment (J/smK). 
+Lake-specific parameters include: the lake’s latitude, longitude (needed only if meteorological inputs are sub-daily), local time relative to Greenwich Mean Time (needed only if meteorological inputs are sub-daily), maximum number of lake layers (i.e., at the sill elevation with default lake layers being 0.1 m thick), the area of the drainage basin when lake depth equals zero (hectares or 10<sup>4 </sup>m<sup>2</sup>), lake area by layer from top to bottom (hectares or 10<sup>4</sup> m<sup>2</sup>), neutral drag coefficient (unitless), shortwave extinction coefficient (1/meters), albedo of melting and non-melting snow (unitless), number of sediment layers (count), albedo of lake sediment (unitless), specific heat of sediment (J/m<sup>3</sup>K), and thermal conductivity of sediment (J/smK). 
 
 User-specified initial conditions include: the prescribed or initial number of lake layers (default lake layers being 0.1 m thick), prescribed or initial lake salinity (parts per thousand), initial lake temperature by layer from top to bottom (degrees C), and initial sediment temperature by layer from top to bottom (degrees C).
 
@@ -28,8 +28,8 @@ As the model is currently configured, one meteorological input file is needed an
 * Air temperature (degrees C or K; specify unit using K_flag in <lake.inc>; specify height of measurement using either z_screen or sigma in <lake.inc>)
 * Humidity (either relative humidity, %, specific humidity, kg/kg, or dewpoint, degrees C or K; specify unit using rh_flag, q_flag, and dp_flag in <lake.inc>; specify height of measurement using either z_screen or sigma in <lake.inc>)
 * Wind speed (m/s; specify height of measurement using u_screen or sigma in <lake.inc>)
-* Surface incident shortwave radiation (W/m2)
-* Surface downward longwave radiation (W/m2)
+* Surface incident shortwave radiation (W/m<sup>2</sup>)
+* Surface downward longwave radiation (W/m<sup>2</sup>)
 * Surface pressure (mb)
 * Precipitation (mm)
 * Basin water input (mm per unit area of the drainage basin; needed only if wb_flag set to .true.)
@@ -40,7 +40,7 @@ Currently, the model generates one output file called <surface.dat>.  This file 
 
 * Year
 * Month
-* Julian day (from 1-365)
+* Julian day (from 1-366)
 * Lake surface temperature (degrees Celsius, averaged over top lake layer)
 * Sediment surface temperature (degrees Celsius, averaged over top sediment layer)
 * Ice fraction (ranges from 0 to 1)
@@ -53,10 +53,10 @@ Currently, the model generates one output file called <surface.dat>.  This file 
 
 ## 5. Testing
 
-The directories examples/daily-data/ and examples/sub-daily-data/ contain meteorological input files <met-input.txt>, include files <lake.inc>, and output files <surface.dat> for an example using daily input data and an example using hourly input data. The model can be compiled and executed using the following command sequence:
-> f95 -c *.f90 <br/>
-> f95 -o lake *.o <br/>
-> ./lake
+The directories examples/daily-data/ and examples/sub-daily-data/ contain meteorological input files <met-input.txt>, include files <lake.inc>, and output files <surface.dat> for one example using daily input data and one example using hourly input data. The model can be compiled and executed using the following command sequence:
+/> f95 -c *.f90 <br/>
+/> f95 -o lake *.o <br/>
+/> ./lake
 
 ## 6. References
 
