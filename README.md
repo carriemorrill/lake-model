@@ -54,8 +54,8 @@ Currently, the model generates one output file called <surface.dat>.  This file 
 ## 5. Testing
 
 The directories examples/daily-data/ and examples/sub-daily-data/ contain meteorological input files <met-input.txt>, include files <lake.inc>, and output files <surface.dat> for an example using daily input data and an example using hourly input data. The model can be compiled and executed using the following command sequence:
-> f95 -c *.f90\n
-> f95 -o lake *.o\n
+> f95 -c *.f90 \n
+> f95 -o lake *.o \n
 > ./lake
 
 ## 6. References
