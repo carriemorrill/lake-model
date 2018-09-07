@@ -25,9 +25,9 @@ As the model is currently configured, one meteorological input file is needed an
 * Month
 * Day (can be day of month or day of year)
 * Hour of day (any numeric values; needed only if data are sub-daily)
-* Air temperature (degrees C or K; specify unit using K_flag in lake.inc; specify height of measurement using either z_screen or sigma in lake.inc)
-* Humidity (either relative humidity, %, specific humidity, kg/kg, or dewpoint, degrees C or K; specify unit using rh_flag, q_flag, and dp_flag in lake.inc; specify height of measurement using either z_screen or sigma in lake.inc)
-* Wind speed (m/s; specify height of measurement using u_screen or sigma in lake.inc)
+* Air temperature (degrees C or K; specify unit using K_flag in <lake.inc>; specify height of measurement using either z_screen or sigma in <lake.inc>)
+* Humidity (either relative humidity, %, specific humidity, kg/kg, or dewpoint, degrees C or K; specify unit using rh_flag, q_flag, and dp_flag in <lake.inc>; specify height of measurement using either z_screen or sigma in <lake.inc>)
+* Wind speed (m/s; specify height of measurement using u_screen or sigma in <lake.inc>)
 * Surface incident shortwave radiation (W/m2)
 * Surface downward longwave radiation (W/m2)
 * Surface pressure (mb)
