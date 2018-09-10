@@ -25,7 +25,7 @@
       real qs       ! saturation specific humidity [kg/kg]
 
       if (sw_in.lt.0.0) sw_in = 0.0
-      ps_in = ps_in * 1000.                     ! convert to Pa   
+      ps_in = ps_in * 100.                      ! convert to Pa   
       prec_in = prec_in / 1000.                 ! convert from mm to m
       runin_in = runin_in / 1000.               ! convert from mm to m
       if (K_flag) then
