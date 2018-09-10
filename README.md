@@ -13,9 +13,16 @@ Lake-specific parameters include: the lake’s latitude, longitude (needed only 
 
 User-specified initial conditions include: the prescribed or initial number of lake layers (default lake layers being 0.1 m thick), prescribed or initial lake salinity (parts per thousand), initial lake temperature by layer from top to bottom (degrees C), and initial sediment temperature by layer from top to bottom (degrees C).
 
-Simulation specific parameters include: the Earth’s obliquity (degrees), number of spin-up years desired, height of temperature and humidity and wind inputs, as well as a number of flags that are used to notate units of meteorological inputs and to turn on/off water balance calculations, variable lake ice cover, variable lake salinity, and heat diffusion through sediments.
+Simulation specific parameters include: the Earth’s obliquity (degrees), number of spin-up years desired, height of temperature and humidity and wind inputs, as well as a number of flags that are used to define units of meteorological inputs and to turn on/off water balance calculations, variable lake ice cover, variable lake salinity, and heat diffusion through sediments.
 
-The neutral drag coefficient is used to determine the vertical transfer of heat and water vapor between the lake and overlying atmosphere. To calculate this transfer, the model uses empirical “bulk formulae,” which rely on gradients of temperature and humidity between the lake and atmosphere along with exchange coefficients. These exchange coefficients depend on several parameters, including lake area and the height above the lake at which meteorological inputs were measured. The latter is set as z_screen in <lake.inc>. For more information see the paper by Strub and Powell (1987). 
+Some lake-specific parameters are difficult to measure and the user will likely want to conduct sensitivity or calibration studies to choose appropriate values for these parameters. Suggested ranges for several of these parameters are listed below.
+* neutral drag coefficient: 1.0 to 2.5 e-3 (Strub and Powell, 1987). Note that this value will depend on several parameters, including lake area and the height above the lake at which meteorological inputs were measured.  
+* shortwave extinction coefficient: 0.1 to 1.0 
+* albedo of melting snow: 0.4 to 0.7
+* albedo of non-melting snow: 0.7 to 0.9
+* albedo of lake sediments: 0.05 to 0.2
+* specific heat of sediments: 2.9 to 3.7 e6 (Muller, Goto)
+* thermal conductivity of sediments: 0.5 to 5.0 (Wallen)
 
 ## 3. Meteorological input file
 
