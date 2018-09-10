@@ -2,7 +2,7 @@
 !     Parameter declarations
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      real oblq, xlat, xlon, gmt  		          ! geographical parameters
+      real oblq, xlat, xlon, gmt                  ! geographical parameters
       real b_area, cdrn, eta, alb_slush           ! lake physical parameters
       real alb_snow, alb_sed, csed, condsed       ! lake physical parameters
       integer max_dep                             ! lake physical parameters
@@ -20,7 +20,7 @@
       real cpw_ice, condw, beta                   ! physical constants
       real fsol1, fsol2, sical0, sical1           ! physical constants
       real kv, dm, pi, snocrit                    ! physical constants
-      real lamisw, lamilw, lamssw, lamslw	      ! physical constants
+      real lamisw, lamilw, lamssw, lamslw         ! physical constants
       real afrac1, afrac2, condi, conds           ! physical constants
       real raddeg, dpd, grav                      ! physical constants	  
       integer nzlk, nzsed
@@ -37,10 +37,10 @@
       parameter (gmt = -999. )        ! offset from Greenwich Mean Time [hours]
 
 ! lake physical parameters	
-      parameter (max_dep = 13)	      ! maximum number of lake layers [count]
+      parameter (max_dep = 13)        ! maximum number of lake layers [count]
       parameter (b_area = 10.7)       ! area of catchment+lake [hectares]
       real area(max_dep)
-      data area /13*2.2/	          ! lake area by depth from top to bottom [hectares]  
+      data area /13*2.2/              ! lake area by depth from top to bottom [hectares]  
       parameter (cdrn = 3.0e-3)       ! neutral drag coefficient [unitless]
       parameter (eta = 0.2)           ! shortwave extinction coefficient through water [1/m]
       parameter (alb_slush = 0.4)     ! albedo of melting snow [unitless]
