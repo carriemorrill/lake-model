@@ -21,8 +21,8 @@ Some lake-specific parameters are difficult to measure and the user will likely 
 * albedo of melting snow: 0.4 to 0.7
 * albedo of non-melting snow: 0.7 to 0.9
 * albedo of lake sediments: 0.05 to 0.2
-* specific heat of sediments: 2.9 to 3.7 e6 (Muller, Goto)
-* thermal conductivity of sediments: 0.5 to 5.0 (Wallen)
+* specific heat of sediments: 2.0 to 4.0 e6 (Goto and Matsubayashi 2009, Müller et al. 2016)
+* thermal conductivity of sediments: 0.5 to 2.5 (Goto and Matsubayashi 2009, Müller et al. 2016)
 
 ## 3. Meteorological input file
 
@@ -67,6 +67,8 @@ The directories examples/daily-data/ and examples/sub-daily-data/ contain meteor
 
 ## 6. References
 
+Goto S, Matsubayashi O (2009) Relations between the thermal properties and porosity of sediments in the eastern flank of the Juan de Fuca Ridge. Earth Planets Space 61: 863–870.
+
 Hostetler S, Benson LV (1990) Paleoclimatic implications of the high stand of Lake Lahontan derived from models of evaporation and lake level. Climate Dynamics 4:207-217
 
 Hostetler SW (1991) Simulation of lake ice and its effect on the late-Pleistocene evaporation rate of Lake Lahontan. Climate Dynamics 6:43-48
@@ -76,6 +78,8 @@ Hostetler SW, Bartlein PJ (1990) Simulation of lake evaporation with application
 Hostetler SW, Benson LV (1994) Stable isotopes of oxygen and hydrogen in the Truckee River-Pyramid Lake surface-water system.  2.  A predictive model of d18O and d2H in Pyramid Lake. Limnology and Oceanography 39:356-364
 
 Morrill C, Small EE, Sloan LC (2001) Modeling orbital forcing of lake level change: Lake Gosiute (Eocene), North America. Global and Planetary Change 29:57-76
+
+Müller C, Usbeck R, Miesner, F (2016) Temperatures in shallow marine sediments: Influence of thermal properties, seasonal forcing, and man-made heat sources. Applied Thermal Engineering 108: 20-29.
 
 Patterson JC, Hamblin PF (1988) Thermal simulation of a lake with winter ice cover. Limnology and Oceanography 33:323-338
 
