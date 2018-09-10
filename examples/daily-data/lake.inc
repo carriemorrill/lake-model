@@ -32,7 +32,6 @@
 ! geographical parameters
 ! Note: xlon and gmt used only if meteorological input is sub-daily
 
-      parameter (oblq = 23.4)         ! Earth's obliquity [degrees]
       parameter (xlat = 41.43)        ! local latitude (negative for South) [degrees North]
       parameter (xlon = -106.4)       ! local longitude (negative for West) [degrees East]
       parameter (gmt = -999. )        ! offset from Greenwich Mean Time [hours]
@@ -65,6 +64,7 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       parameter (readdt = 60.*60.*24.)    ! frequency of input reads [seconds]
+      parameter (oblq = 23.4)             ! Earth's obliquity [degrees]
       parameter (nspin = 1)               ! model spin-up [years]
       parameter (z_screen = 2.0)          ! height of temperature and humidity inputs [meters]
       parameter (u_screen = 15.0)         ! height of wind input [meters]	  
