@@ -87,4 +87,8 @@ Small EE, Sloan LC, Hostetler S, Giorgi F (1999) Simulating the water balance of
 
 Strub PT, Powell TM (1987) The exchange coefficients for latent and sensible heat flux over lakes: Dependence upon atmospheric stability. Boundary Layer Meteorology 40:349-361
 
+## 7. Acknowledgements
+
+Development of portions of this code was supported by the National Science Foundation under Grant Number 1504069. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+
 
