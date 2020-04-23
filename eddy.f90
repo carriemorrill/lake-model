@@ -42,7 +42,7 @@
 
       u = amax1(u2, 0.5) ! avoid NAN in ks 
       ks = 6.6 * sqrt(abs(sin(xlat * raddeg))) * u**(-1.84)
-      ws = 0.0012 * u2
+      ws = 0.0012 * u
       Po = 1.0
 
       radmax = 4.e4 ! limits Ri to 10
