@@ -44,7 +44,11 @@
          call zenith (julian, hour, coszrs)
          albw = 0.05 / (coszrs + 0.15)
       else                 ! water albedo does not have diurnal cycle
-         albw = 0.08 + 0.02 * sin(2. * pi * julian / 365. + pi / 2.)
+         if (xlat.ge.0.0) then  ! northern hemisphere
+            albw = 0.08 + 0.02 * sin(2. * pi * julian / 365. + pi / 2.)
+	   else                   ! southern hemisphere
+		albw = 0.08 + 0.02 * sin(2. * pi * julian / 365. - pi / 2.)
+	   endif	
       endif
 
       return
