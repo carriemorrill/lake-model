@@ -257,8 +257,8 @@
       common mixmax_a               ! maximum value of lake layer to which mixing occurs over one day of simulation [count] 
       common fraci_a                ! lake ice cover [fraction] 
       common tlake_a(max_dep)       ! lake water temperature averaged across open water and ice covered columns [degrees C]
-	  common d18Os_a                ! delta 18O of snow on ice [per mil]
-	  common d2Hs_a                 ! delta 2H of snow on ice [per mil]
+      common d18Os_a                ! delta 18O of snow on ice [per mil]
+      common d2Hs_a                 ! delta 2H of snow on ice [per mil]
       common snow_flag_a            ! is snow present on ice?
       common melt_flag_a            ! are snow and ice melting?
       common hour_flag              ! is meteorological input sub-daily?
@@ -272,7 +272,7 @@
       common hsnow_ave              ! average snow thickness across multiple dt [m]
       common runout_sum             ! sum of lake discharge across multiple dt [m3]
       common temp_ave(max_dep)      ! average lake temperature across multiple dt [degrees C]
-	  common tracer_ave(3,max_dep)  ! average tracer values across multiple dt [ppt,per mil,per mil]
+      common tracer_ave(3,max_dep)  ! average tracer values across multiple dt [ppt,per mil,per mil]
       common swup_ave               ! average reflected shortwave at lake surface across multiple dt [W/m2]
       common lwup_ave               ! average upwelling longwave at lake surface across multiple dt [W/m2]
       common swnet_ave              ! average net shortwave at lake surface across multiple dt [W/m2]
