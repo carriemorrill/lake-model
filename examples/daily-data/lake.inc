@@ -14,10 +14,9 @@
       logical K_flag, rh_flag, q_flag, dp_flag    ! meteorological input flags
       logical wb_flag, ice_flag, salt_flag        ! simulation options
       logical sed_flag, d2H_flag, d18O_flag       ! simulation options
-!	  character*100 fout                          ! simulation options
-	  logical tlake_profile, tsed_profile         ! output options
-	  logical d18O_profile, d2H_profile           ! output options
-	  logical salty_profile                       ! output options
+      logical tlake_profile, tsed_profile         ! output options
+      logical d18O_profile, d2H_profile           ! output options
+      logical salty_profile                       ! output options
       real dz, dt, zo, delta                      ! physical constants
       real rhowat, rhoice, rhosnow, snowcut       ! physical constants
       real cpair, rair, rvap, cvap, Le, Lei       ! physical constants
@@ -53,6 +52,7 @@
 !     Simulation settings **CHANGE THESE**
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+      parameter (oblq = 23.4)             ! Earth's obliquity [degrees]; change for paleo periods
       parameter (nspin = 1)               ! model spin-up [# of years]; these years will be run but not output
       parameter (wb_flag = .true.)        ! calculate lake water balance?
       parameter (ice_flag = .true.)       ! calculate variable ice cover?
@@ -89,8 +89,7 @@
 
 ! required geographical parameters
       parameter (xlat = 41.43)        ! local latitude (negative for South) [degrees North]
-      parameter (oblq = 23.4)         ! Earth's obliquity [degrees]; change for paleo periods
-  
+
 ! geographical parameters used when meteorological input is sub-daily
       parameter (xlon = -106.4)       ! local longitude (negative for West) [degrees East]
       parameter (gmt = -999.)         ! offset from Greenwich Mean Time [hours]
@@ -165,7 +164,7 @@
       integer tsed_print(3)
       data tsed_print /1, -999, 2/        ! first layer, last layer, stepsize
 
-      parameter (d18O_profile = .false.)  ! print lake d18O profile
+      parameter (d18O_profile = .true.)  ! print lake d18O profile
       integer d18O_print(3)
       data d18O_print /1, -999, 1/        ! first layer, last layer, stepsize
 
@@ -178,7 +177,9 @@
       data salty_print /1, -999, 2/       ! first layer, last layer, stepsize
 
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!     Other parameters **DO NOT CHANGE** without good reason 
+!     Other parameters **DO NOT CHANGE** without good reason
+!       One exception: changing dz and surf should be possible, within reason
+!       (e.g., changing them to 1 meter for very deep lakes) 
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       parameter (dz = 0.1)                ! vertical layer thickness [m]
@@ -256,8 +257,8 @@
       common mixmax_a               ! maximum value of lake layer to which mixing occurs over one day of simulation [count] 
       common fraci_a                ! lake ice cover [fraction] 
       common tlake_a(max_dep)       ! lake water temperature averaged across open water and ice covered columns [degrees C]
-	  common d18Os_a                ! delta 18O of snow on ice [per mil]
-	  common d2Hs_a                 ! delta 2H of snow on ice [per mil]
+      common d18Os_a                ! delta 18O of snow on ice [per mil]
+      common d2Hs_a                 ! delta 2H of snow on ice [per mil]
       common snow_flag_a            ! is snow present on ice?
       common melt_flag_a            ! are snow and ice melting?
       common hour_flag              ! is meteorological input sub-daily?
@@ -271,7 +272,7 @@
       common hsnow_ave              ! average snow thickness across multiple dt [m]
       common runout_sum             ! sum of lake discharge across multiple dt [m3]
       common temp_ave(max_dep)      ! average lake temperature across multiple dt [degrees C]
-	  common tracer_ave(3,max_dep)  ! average tracer values across multiple dt [ppt,per mil,per mil]
+      common tracer_ave(3,max_dep)  ! average tracer values across multiple dt [ppt,per mil,per mil]
       common swup_ave               ! average reflected shortwave at lake surface across multiple dt [W/m2]
       common lwup_ave               ! average upwelling longwave at lake surface across multiple dt [W/m2]
       common swnet_ave              ! average net shortwave at lake surface across multiple dt [W/m2]
