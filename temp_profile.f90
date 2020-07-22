@@ -6,7 +6,7 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       subroutine temp_profile (iwater, qbot, qw, t, sw, lnet, qe, qh,   &
-                               de, nzlk, salty, tsed)
+                               de, nzlk, tracer, tsed)
    
       implicit none
       include 'lake.inc'
@@ -20,7 +20,7 @@
       real qe            ! latent heat flux to lake [W/m2]
       real qh            ! sensible heat flux to lake [W/m2]
       real de(nzlk)      ! eddy diffusivity [m2/s]
-      real salty(max_dep)! lake layer salinity [ppt]
+      real tracer(3,max_dep)! lake tracers: salinity [ppt] is first of three
       real tsed(nzsed)   ! sediment layer temperature [degrees C]
  
       real zsed(nzsed)   ! sediment node depths [m]
@@ -67,8 +67,8 @@
 
       do k = 1,nzlk 
         tall(k) = t(k)
-        call density (t(k), salty(k), dnsty(k))
-        call specheat (t(k), salty(k), cpz(k))
+        call density (t(k), tracer(1,k), dnsty(k))
+        call specheat (t(k), tracer(1,k), cpz(k))
         tk(k) = de(k) * (1.e3 + dnsty(k)) * cpz(k)
         factx(k) = dt / ((1.e3 + dnsty(k)) * cpz(k) * dzall(k))
       enddo
