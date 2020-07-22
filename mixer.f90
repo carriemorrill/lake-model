@@ -4,41 +4,43 @@
 !     density instabilities
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      subroutine mixer (t, dnsty, nzlk, salty, mixdep)
+      subroutine mixer (t, dnsty, nzlk, tracer, mixdep)
 
       implicit none
       include 'lake.inc'
 
       real t(nzlk)     ! temperature of lake layer [degrees C]	 
       real dnsty(nzlk) ! water density anomaly from 1000 [kg/m3]
-      real salty(max_dep)  ! salinity of lake layer [ppt]
+      real tracer(3,max_dep)  ! lake tracers: salinity, d18O, d2H [ppt, per mil, per mil]
       integer mixdep   ! depth to which mixing from surface has occurred 
 
-      real tr_work(max_dep)! working salinity array [ppt]
-      real avet        ! average energy of mixed layers [J]
-      real avev        ! average heat capacity of mixed layers [J/K]	 
-      real ave_tr      ! average salinity amount [ppt]
-      real avev_tr     ! average volume of mixed layers [m3]	
+      real tr_work(3,max_dep)! working lake tracers: salinity, d18O, d2H [ppt, per mil, per mil]
+      real nrg_sum     ! summed energy of mixed layers [J]
+      real hcap_sum    ! summed heat capacity of mixed layers [J/K]	 
+      real tracer_sum(3)   ! average tracer amount: salinity, d18O, d2H [ppt, per mil, per mil]
+      real vol_sum     ! summed volume of mixed layers [m3]	
       real cp          ! specific heat capacity of water [J/kgK]
-      real vol         ! heat capacity of layer [J/K]
-      real vol_tr      ! total volume of layer [m3]
-      real tav         ! new average temperature of mixed layers [K]
-      real tr_av       ! new ave salinity concentration [ppt]
+      real hcap        ! heat capacity of layer [J/K]
+      real vol         ! total volume of layer [m3]
+      real t_ave       ! new average temperature of mixed layers [K]
+      real tr_ave(3)   ! new average tracer values of mixed layers: salinity, d18O, d2H [ppt, per mil, per mil]
       real densnew     ! new density following mixing [kg/m3]
       real rho_max     ! maximum density above mixed section [kg/m3]
       integer k        ! counter for looping through all lake layers
       integer mixprev  ! top of instability being investigated
       integer m        ! counter for looping through mixing layers
-
+      integer i        ! counter for looping through tracers
 
       do k = 1, nzlk
-         call density (t(k), salty(k), dnsty(k))
+         call density (t(k), tracer(1,k), dnsty(k))
       enddo
 
       mixprev = 1 ! set top depth of local instability
 
       do  k = 1,nzlk
-        tr_work(k) = salty(k) 
+         do i = 1,3
+           tr_work(i,k) = tracer(i,k)
+         enddo
       enddo
 
 !-----------------------------------------------------------------------
@@ -47,10 +49,12 @@
 
  9    continue            ! if a new instability created by mixer
       do k = 1,nzlk-2    ! don't do layer that touches sediment
-        avet = 0.0
-        avev = 0.0
-        ave_tr  = 0.
-        avev_tr = 0.  
+        nrg_sum = 0.0
+        hcap_sum = 0.0
+        vol_sum = 0.
+        do i = 1,3
+           tracer_sum(i) = 0.
+        enddo
 
         if (dnsty(k).gt.dnsty(k+1)) then  ! instability found
          if (mixprev.eq.1.and.(k+1).gt.mixdep) mixdep = k + 1  
@@ -60,38 +64,44 @@
 !------------------------------------------------------------------------
 
          do m = mixprev, k+1  
-           call specheat (t(m), salty(m), cp)
+           call specheat (t(m), tracer(1,m), cp)
            if (m.eq.1) then  ! surface layer
-              vol = surf * (1.e3 + dnsty(m)) * cp * area(m+max_dep-nzlk) 
-              vol_tr = surf * area(m+max_dep-nzlk)
+              hcap = surf * (1.e3 + dnsty(m)) * cp * area(m+max_dep-nzlk) 
+              vol = surf * area(m+max_dep-nzlk)
            else   ! non-surface layer
-              vol = dz * (1.e3 + dnsty(m)) * cp * area(m+max_dep-nzlk)  
-              vol_tr = dz * area(m+max_dep-nzlk)
+              hcap = dz * (1.e3 + dnsty(m)) * cp * area(m+max_dep-nzlk)  
+              vol = dz * area(m+max_dep-nzlk)
            endif
 
-           avet = avet + t(m) * vol  ! sum energy across layers
-           avev = avev + vol         ! sum heat capacity across layers
-           ave_tr = ave_tr + tr_work(m) * vol_tr
-           avev_tr = avev_tr + vol_tr   ! sum volume across layers
+           nrg_sum = nrg_sum + t(m) * hcap  ! sum energy across layers
+           hcap_sum = hcap_sum + hcap ! sum heat capacity across layers
+           vol_sum = vol_sum + vol    ! sum volume across layers
+           do i = 1,3
+              tracer_sum(i) = tracer_sum(i) + tr_work(i,m) * vol
+           enddo
          enddo  
 
-         tav = avet / avev     ! new average temperature of mixed layers
-         tr_av = ave_tr / avev_tr
+         t_ave = nrg_sum / hcap_sum     ! new average temperature of mixed layers
+         do i = 1,3
+            tr_ave(i) = tracer_sum(i) / vol_sum  ! new average tracers of mixed layers
+         enddo
 
 !--------------------------------------------------------------------------
 !  3.  update temp, tracers, density in the mixed part of the column
 !--------------------------------------------------------------------------
 
-         if (s_flag) then    ! use variable salinity to calc density
-          call density (tav, tr_av, densnew)
+         if (salt_flag) then    ! use variable salinity to calc density
+           call density (t_ave, tr_ave(1), densnew)
          else    !  salinity constant
-          call density (tav, salty(1), densnew)
+           call density (t_ave, tracer(1,1), densnew)
          endif   
 
          do m = mixprev,k+1
-           t(m) = tav 
-           tr_work(m) = tr_av
+           t(m) = t_ave 
            dnsty(m) = densnew
+           do i = 1,3
+             tr_work(i,m) = tr_ave(i)
+           enddo
          enddo
 
 !-------------------------------------------------------------------------
@@ -127,39 +137,46 @@
       if (dnsty(k).lt.dnsty(k-1)) then  ! instability from seds
 
          if (mixdep.eq.12) mixdep = 13
-         avet = 0.0
-         avev = 0.0
-         ave_tr = 0.
-         avev_tr = 0.
-
-         do m=k-1,nzlk
-            call specheat (t(m), salty(m), cp)
+         nrg_sum = 0.0
+         hcap_sum = 0.0
+         vol_sum = 0.
+         do i = 1,3
+            tracer_sum(i) = 0.
+         enddo
+         do m = k-1,nzlk
+            call specheat (t(m), tracer(1,m), cp)
             if (m.eq.1) then  ! surface layer
-              vol = surf * (1.e3 + dnsty(m)) * cp * area(m+max_dep-nzlk) 
-              vol_tr = surf * area(m+max_dep-nzlk)
+              hcap = surf * (1.e3 + dnsty(m)) * cp * area(m+max_dep-nzlk) 
+              vol = surf * area(m+max_dep-nzlk)
             else   ! non-surface layer
-              vol = dz * (1.e3 + dnsty(m)) * cp * area(m+max_dep-nzlk)  
-              vol_tr = dz * area(m+max_dep-nzlk)
+              hcap = dz * (1.e3 + dnsty(m)) * cp * area(m+max_dep-nzlk)  
+              vol = dz * area(m+max_dep-nzlk)
             end if
-            avet = avet + t(m) * vol
-            avev = avev + vol
-            ave_tr = ave_tr + tr_work(m) * vol_tr
-            avev_tr = avev_tr + vol_tr
+            nrg_sum = nrg_sum + t(m) * hcap
+            hcap_sum = hcap_sum + hcap
+            vol_sum = vol_sum + vol
+            do i = 1,3
+              tracer_sum(i) = tracer_sum(i) + tr_work(i,m) * vol
+            enddo
          enddo
 
-         tav = avet / avev
-         tr_av = ave_tr / avev_tr
+         t_ave = nrg_sum / hcap_sum
+         do i = 1,3
+            tr_ave(i) = tracer_sum(i) / vol_sum
+         enddo
 
-         if (s_flag) then
-            call density (tav, tr_av, densnew)
+         if (salt_flag) then
+            call density (t_ave, tr_ave(1), densnew)
          else
-            call density (tav, salty(1), densnew)
+            call density (t_ave, tracer(1,1), densnew)
          endif 
  
          do m=k-1,nzlk
-           t(m) = tav
-           tr_work(m) = tr_av
+           t(m) = t_ave
            dnsty(m) = densnew
+           do i = 1,3
+             tr_work(i,m) = tr_ave(i)
+           enddo
          enddo
 
          else
@@ -174,9 +191,13 @@
 !------------------------------------------------------------------------
 
       do k = 1,nzlk
-        if (s_flag)                                                     &
-          salty(k) = tr_work(k) 
-        call density (t(k), salty(k), dnsty(k)) ! new density
+        if (salt_flag)                                                  &
+          tracer(1,k) = tr_work(1,k) 
+        if (d18O_flag)                                                  &
+          tracer(2,k) = tr_work(2,k)
+        if (d2H_flag)                                                   &
+          tracer(3,k) = tr_work(3,k)
+        call density (t(k), tracer(1,k), dnsty(k)) ! new density
       enddo
 
       return

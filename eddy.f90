@@ -4,7 +4,7 @@
 !     Henderson-Sellers 1985 Applied Mathematical Modelling 9: 441-446
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      subroutine eddy (iwater, u2, t, de, nzlk, salty)
+      subroutine eddy (iwater, u2, t, de, nzlk, tracer)
 
       implicit none
       include 'lake.inc'
@@ -12,7 +12,7 @@
       real u2             ! screen-height wind speed [m/s]
       real t(nzlk)        ! lake surface temperature [degrees C]
       real de(nzlk)       ! eddy diffusivity [m2/s]
-      real salty(max_dep) ! lake salinity [ppt]  
+      real tracer(3,max_dep) ! lake tracers: salinity [ppt] is first of three  
       integer iwater      ! open water or ice flag
   
       real dnsty(nzlk)  ! water density anomaly from 1000 [kg/m3]	  	  
@@ -30,7 +30,7 @@
       integer k         ! counter for looping through lake layers
 
       do k = 1,nzlk
-         call density (t(k), salty(k), dnsty(k))
+         call density (t(k), tracer(1,k), dnsty(k))
       enddo
 
       if (iwater.ne.1) then ! if ice fraction, no de just dm

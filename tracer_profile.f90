@@ -1,28 +1,29 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !                      TRACER_PROFILE
-!     compute diffusive mixing of salinity profile using Crank
+!     compute diffusive mixing of tracer profiles using Crank
 !     Nicolson solution of 1-D diffusion equation
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      subroutine tracer_profile (de, nzlk, salty)
+      subroutine tracer_profile (de, nzlk, tracer, itracer)
    
       implicit none
       include 'lake.inc'
 
       real de(nzlk)      ! eddy diffusivity [m2/s]
-      real salty(max_dep)! lake layer salinity [ppt]
+      real tracer(3,max_dep)! lake tracers: salinity, d18O, d2H [ppt, per mil, per mil]
+      integer itracer    ! index of tracer array to use in computation
  
       real dzall(nzlk)   ! thickness of each lake and sediment layer [m]
       real ztop(nzlk)    ! depth of each lake and sediment layer at top [m]	  
-      real*8 tall(nzlk)  ! starting temperature of layers [degrees C]
-      real dei(nzlk)     ! thermal conductivity at layer interface [W/mK] 
+      real*8 tall(nzlk)  ! starting tracer value of layers [ppt or per mil]
+      real dei(nzlk)     ! tracer conductivity at layer interface [m2/s] 
       real dztop         ! distance from one layer node to the layer node above [m]
       real dzbot         ! distance from one layer node to the layer node below [m]
       real*8 a(nzlk)     ! "a" vector for tridiagonal matrix [unitless]
       real*8 b(nzlk)     ! "b" vector for tridiagonal matrix [unitless]
       real*8 c(nzlk)     ! "c" vector for tridiagonal matrix [unitless]
-      real*8 d(nzlk)     ! "d" vector for tridiagonal matrix [degrees C]
-      real*8 tnew(nzlk)  ! new layer temperature from Crank-Nicolson [degrees C]
+      real*8 d(nzlk)     ! "d" vector for tridiagonal matrix [ppt or per mil]
+      real*8 tnew(nzlk)  ! new layer tracer value from Crank-Nicolson [ppt or per mil]
       integer k          ! counter for looping through layers
 
       do k = 1, nzlk
@@ -38,11 +39,7 @@
         ztop(k) = ztop(k-1) + dzall(k-1)
       enddo
 
-      do k = 1,nzlk 
-        tall(k) = salty(k)
-      enddo
-
-! ************** calculate layer interface thermal conductivities ******
+! ************** calculate layer interface eddy conductivities ******
 
       do k=1,nzlk
          if (k.lt.nzlk)                                                 &
@@ -54,6 +51,10 @@
 
 ! ******** calculate arrays for tridiagonal matrix *********************
 
+      do k = 1,nzlk 
+        tall(k) = tracer(itracer,k)
+      enddo
+	  
       k = 1   ! first lake layer, diffusion only to bottom
         dzbot = (dzall(k) + dzall(k+1)) / 2.
         c(k) = -0.5 * dei(k) / dzbot * dt / dzall(k)
@@ -86,7 +87,7 @@
        call tridiag_solve (nzlk, a, b, c, d, tnew)
   
        do k = 1, nzlk  ! reset temps and densities
-          salty(k) = tnew(k)
+          tracer(itracer,k) = tnew(k)
        enddo
 
        return

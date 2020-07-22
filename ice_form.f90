@@ -5,7 +5,7 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       subroutine ice_form (psurf, qnetice, t, nzlk, tfreezeC, fracprv,  &
-                           salty, fracadd, fracice, hi)
+                           tracer, fracadd, fracice, hi)
   
       implicit none
       include 'lake.inc'
@@ -15,7 +15,7 @@
       real t(max_dep)   ! lake temperature [degrees C]
       real tfreezeC     ! freezing temperature [degrees C]	  
       real fracprv      ! fraction of ice cover prior to this dt [fraction]	  
-      real salty(max_dep)  ! lake salinity [ppt]
+      real tracer(3,max_dep)  ! lake tracers: salinity [ppt] is the first of three
       real fracadd      ! fraction of lake ice cover to add this dt [fraction]
       real fracice      ! fraction of lake ice cover [0-1]
       real hi           ! lake ice height [m]
@@ -28,13 +28,13 @@
       real xfrac        ! extra fraction of lake ice cover added above 1 [fraction]	  
       integer j         ! counter for looping through lake layers
 
-      call salt_init (psurf, tfreezeC, salty(1))
+      call salt_init (psurf, tfreezeC, tracer(1,1))
       sum = 0.
   
       do j = 1,nzlk
         if (t(j).lt.tfreezeC) then
-           call density (t(j), salty(j), dnsty)
-           call specheat (t(j), salty(j), cp)
+           call density (t(j), tracer(1,j), dnsty)
+           call specheat (t(j), tracer(1,j), cp)
            extra = (tfreezeC - t(j)) * dz * (dnsty + 1.e3) * cp
            if (j.eq.1) extra = (tfreezeC - t(j)) * surf *             &
                         (dnsty + 1.e3) * cp
