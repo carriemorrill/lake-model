@@ -3,7 +3,7 @@ Lake energy and water balance model based upon the model of Hostetler and Bartle
 
 ## 1. Description of model
 
-This lake energy and water balance model originates from the 1-dimensional lake energy balance model of Hostetler and Bartlein (1990). The energy balance model was originally used in conjunction with water balance calculations on a coarser time step and applied to paleoclimate questions (Hostetler and Benson, 1990). Shortly afterwards, Hostetler (1991) incorporated the more sophisticated lake ice model of Patterson and Hamblin (1988) and Hostetler and Benson (1994) added an isotopic module (Note: isotopic module not included in this repository). Later, Small et al. (1999) made modifications to improve the ice model and other components. These modifications include: new parameterizations for sensible and latent heat flux from the BATS land surface model, a Crank-Nicolson numerical solution for calculating diffusion, inclusion of the effects of salinity on water properties and evaporation, and implementation of a partial ice cover scheme. The version in this repository additionally includes subroutines to allow sigma-level atmospheric model data as input (Morrill et al. 2001) and to simulate heat diffusion through lake-bottom sediments (Morrill et al. submitted).
+This lake energy and water balance model originates from the 1-dimensional lake energy balance model of Hostetler and Bartlein (1990). The energy balance model was originally used in conjunction with water balance calculations on a coarser time step and applied to paleoclimate questions (Hostetler and Benson, 1990). Shortly afterwards, Hostetler (1991) incorporated the more sophisticated lake ice model of Patterson and Hamblin (1988) and Hostetler and Benson (1994) added an isotopic module (Note: isotopic module not included in this repository). Later, Small et al. (1999) made modifications to improve the ice model and other components. These modifications include: new parameterizations for sensible and latent heat flux from the BATS land surface model, a Crank-Nicolson numerical solution for calculating diffusion, inclusion of the effects of salinity on water properties and evaporation, and implementation of a partial ice cover scheme. The version in this repository additionally includes subroutines to allow sigma-level atmospheric model data as input (Morrill et al. 2001) and to simulate heat diffusion through lake-bottom sediments (Morrill et al. 2019).
 
 ## 2. User-defined parameters and initial conditions
 
@@ -67,7 +67,7 @@ The directories examples/daily-data/ and examples/sub-daily-data/ contain meteor
 
 ## 6. References
 
-Goto S, Matsubayashi O (2009) Relations between the thermal properties and porosity of sediments in the eastern flank of the Juan de Fuca Ridge. Earth Planets Space 61: 863–870.
+Goto S, Matsubayashi O (2009) Relations between the thermal properties and porosity of sediments in the eastern flank of the Juan de Fuca Ridge. Earth Planets Space 61: 863–870
 
 Hostetler S, Benson LV (1990) Paleoclimatic implications of the high stand of Lake Lahontan derived from models of evaporation and lake level. Climate Dynamics 4:207-217
 
@@ -79,7 +79,9 @@ Hostetler SW, Benson LV (1994) Stable isotopes of oxygen and hydrogen in the Tru
 
 Morrill C, Small EE, Sloan LC (2001) Modeling orbital forcing of lake level change: Lake Gosiute (Eocene), North America. Global and Planetary Change 29:57-76
 
-Müller C, Usbeck R, Miesner, F (2016) Temperatures in shallow marine sediments: Influence of thermal properties, seasonal forcing, and man-made heat sources. Applied Thermal Engineering 108: 20-29.
+Morrill C, Meador E, Livneh B, Liefert DT, Shuman BN (2019) Qualitative model-data comparison of mid-Holocene lake-level change in the central Rocky Mountains. Climate Dynamics 53: 1077-1094
+
+Müller C, Usbeck R, Miesner, F (2016) Temperatures in shallow marine sediments: Influence of thermal properties, seasonal forcing, and man-made heat sources. Applied Thermal Engineering 108: 20-29
 
 Patterson JC, Hamblin PF (1988) Thermal simulation of a lake with winter ice cover. Limnology and Oceanography 33:323-338
 
