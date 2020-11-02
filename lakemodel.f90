@@ -106,12 +106,11 @@
          call lake_main (xtime, year(1), mon(1), julian, ta_i, ua_i,    &
                          qa_i, ps_i, prec_i, sw_i, rlwd_i, runin_i,     &
                          rh_i, print_flag)
+         if (xtime.eq.dsteps) then  ! end of day
+            xtime = 0
+            julian = julian + 1
+         endif
       enddo
-
-      if (xtime.eq.dsteps) then  ! end of day
-         xtime = 0
-         julian = julian + 1
-      endif
 
       if (mon(1).eq.12.and.mon(2).eq.1) then  ! end of year
          julian = 1
