@@ -149,12 +149,11 @@
                          qa_i, ps_i, prec_i, sw_i, rlwd_i, runin_i,     &
                          rh_i, d2Hp_i, d18Op_i, d2Hr_i, d18Or_i,        &
                          print_flag)
+         if (xtime.eq.dsteps) then  ! end of day
+            xtime = 0
+            julian = julian + 1
+         endif
       enddo
-
-      if (xtime.eq.dsteps) then  ! end of day
-         xtime = 0
-         julian = julian + 1
-      endif
 
       if (mon(1).eq.12.and.mon(2).eq.1) then  ! end of year
          julian = 1
