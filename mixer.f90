@@ -126,7 +126,7 @@
       do k = nzlk,2,-1
       if (dnsty(k).lt.dnsty(k-1)) then  ! instability from seds
 
-         if (mixdep.eq.12) mixdep = 13
+         if (mixdep.eq.max_dep-1) mixdep = max_dep
          avet = 0.0
          avev = 0.0
          ave_tr = 0.
