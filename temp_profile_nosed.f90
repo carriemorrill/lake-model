@@ -23,7 +23,10 @@
       real salty(max_dep)! lake layer salinity [ppt]
  
       real dzall(nzlk)   ! thickness of each lake layer [m]
-      real ztop(nzlk)    ! depth of each lake layer at top [m]	  
+      real ztop(nzlk)    ! depth of each lake layer at top [m]
+      real area_top(nzlk)! area of each lake layer at top [m]
+      real area_bot(nzlk)! area of each lake layer at bottom [m]
+      real area_mid(nzlk)! area of each lake layer at middle [m]
       real*8 tall(nzlk)  ! starting temperature of layers [degrees C]
       real dnsty(nzlk)   ! water density anomaly from 1000 [kg/m3] 
       real cpz(nzlk)     ! specific heat of lake layer [J/kgK]  
@@ -39,15 +42,29 @@
       real*8 d(nzlk)     ! "d" vector for tridiagonal matrix [degrees C]
       real*8 tnew(nzlk)  ! new layer temperature from Crank-Nicolson [degrees C]
       integer k          ! counter for looping through layers
+      integer ktop       ! index value of lake surface
 
-      do k = 1, nzlk
-        if (k.eq.1) dzall(k) = surf
-        if (k.gt.1) dzall(k) = dz
-      enddo
-
-      ztop(1) = 0.
-      do k = 2, nzlk
-        ztop(k) = ztop(k-1) + dzall(k-1)
+      ktop = max_dep - nzlk   ! used to determine lake area from input bathymetry
+      do k = 1, nzlk          ! set up lake depth and area arrays
+        area_mid(k) = area(k+ktop)
+        if (k.eq.1) then      ! top lake layer
+          dzall(k) = surf
+          ztop(k) = 0.
+          area_top(k) = area(k+ktop)
+          area_bot(k) = (area(k+ktop) + area(k+ktop+1))/2.
+        endif
+        if (k.gt.1.and.k.lt.nzlk) then
+          dzall(k) = dz
+          ztop(k) = ztop(k-1) + dzall(k-1)
+          area_top(k) = (area(k+ktop) + area(k+ktop-1))/2.
+          area_bot(k) = (area(k+ktop) + area(k+ktop+1))/2.
+        endif
+        if (k.eq.nzlk) then   ! bottom lake layer
+          dzall(k) = dz
+          ztop(k) = ztop(k-1) + dzall(k-1)
+          area_top(k) = (area(k+ktop) + area(k+ktop-1))/2.
+          area_bot(k) = area(k+ktop)
+        endif
       enddo
 
       do k = 1,nzlk 
@@ -64,23 +81,26 @@
          do k=1,nzlk
             if (k.eq.1) &   ! topmost lake layer
               h(k) = (sw * beta) + (1. - beta) * sw * (1. - exp(-eta *  &
-                ztop(k+1))) + (lnet + qe + qh)
-            if (k.gt.1.and.k.lt.nzlk) &  ! middle lake layers          
-              h(k) = (1. - beta) * sw * (exp(-eta * ztop(k))            &
-                - exp(-eta * ztop(k+1))) 
-            if (k.eq.nzlk) &  ! middle lake layers          
-              h(k) = (1. - beta) * sw * exp(-eta * ztop(k))          
+               ztop(k+1))) * (area_bot(k)/area_mid(k)) + (lnet + qe + qh)
+            if (k.gt.1.and.k.lt.nzlk) &  ! middle lake layers            
+              h(k) = (1. - beta) * sw * (area_top(k)*exp(-eta * ztop(k))&
+                - area_bot(k)*exp(-eta * ztop(k+1))) / area_mid(k)      
+            if (k.eq.nzlk) &  ! bottom lake layer                        
+              h(k) = (1. - beta) * sw * exp(-eta * ztop(k)) *           &
+                (area_top(k)/area_mid(k))
          enddo
       else   ! lake is ice covered
          do k=1,nzlk
             if (k.eq.1)                                                 &
               h(k) = (qbot * beta) + (1. - beta) * qbot * (1. - exp     &
-                (-eta * ztop(k+1))) - qw
+                (-eta * ztop(k+1))) * (area_bot(k)/area_mid(k)) - qw     
             if (k.gt.1.and.k.lt.nzlk)                                   &
-              h(k) = (1. - beta) * qbot * (exp(-eta * ztop(k))          &
-                   - exp(-eta * ztop(k+1))) 
-            if (k.eq.nzlk) &  ! middle lake layers          
-              h(k) = (1. - beta) * sw * exp(-eta * ztop(k)) 
+              h(k) = (1. - beta) * qbot * (area_top(k)*                 &
+                exp(-eta * ztop(k)) - area_bot(k)*exp(-eta * ztop(k+1)))&
+                / area_mid(k)
+            if (k.eq.nzlk) &  
+              h(k) = (1. - beta) * sw * exp(-eta * ztop(k)) *           &
+                (area_top(k)/area_mid(k))
          enddo
       endif
 
@@ -98,30 +118,38 @@
 
       k = 1   ! first lake layer, diffusion only to bottom
         dzbot = (dzall(k) + dzall(k+1)) / 2.
-        c(k) = -0.5 * tki(k) / dzbot * factx(k)
+        c(k) = -0.5 * (area_bot(k)/area_mid(k)) * tki(k) /              &
+                dzbot * factx(k)
         a(k) = 0.
         b(k) = 1. - c(k)  
         d(k) = tall(k) + factx(k) *                                     &
-              (h(k) + 0.5 * tki(k) * (tall(k+1) - tall(k)) / dzbot)
+              (h(k) + 0.5 * (area_bot(k)/area_mid(k)) * tki(k) *        &
+              (tall(k+1) - tall(k)) / dzbot)
      
       do k = 2,nzlk-1  ! middle layers, diffusion to top and bot
         dzbot = (dzall(k) + dzall(k+1)) / 2.
         dztop = (dzall(k-1) + dzall(k)) / 2.
-        c(k) = -0.5 * tki(k) / dzbot * factx(k)  
-        a(k) = -0.5 * tki(k-1) / dztop * factx(k)  
+        c(k) = -0.5 * (area_bot(k)/area_mid(k)) * tki(k) /              &
+                dzbot * factx(k)
+        a(k) = -0.5 * (area_top(k)/area_mid(k)) * tki(k-1) /            &
+                dztop * factx(k)
         b(k) = 1. - c(k) - a(k)
-        d(k) = tall(k) + factx(k) *                                     &
-              (h(k) + 0.5 * tki(k) * (tall(k+1) - tall(k)) / dzbot      &
-               - 0.5 * tki(k-1) * (tall(k) - tall(k-1)) / dztop)
+        d(k) = tall(k) + factx(k) * (h(k)                               &
+               + 0.5 * (area_bot(k)/area_mid(k)) * tki(k) *             &
+               (tall(k+1) - tall(k)) / dzbot                            &
+               - 0.5 * (area_top(k)/area_mid(k)) * tki(k-1) *           &
+               (tall(k) - tall(k-1)) / dztop)
       enddo
 
       k = nzlk     ! bottom layer, diffusion only to top
         dztop = (dzall(k-1) + dzall(k)) / 2.
         c(k) = 0.
-        a(k) = -0.5 * tki(k-1) / dztop * factx(k)
+        a(k) = -0.5 * (area_top(k)/area_mid(k)) * tki(k-1) /            &
+                dztop * factx(k)
         b(k) = 1. - a(k)
         d(k) = tall(k) + factx(k) *                                     &
-              (h(k) - 0.5 * tki(k-1) * (tall(k) - tall(k-1)) / dztop)
+              (h(k) - 0.5 * (area_top(k)/area_mid(k)) * tki(k-1) *      &
+              (tall(k) - tall(k-1)) / dztop)
 
 ! ******* solve matrix and reset temp and density arrays ***************
 
