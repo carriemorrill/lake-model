@@ -14,7 +14,10 @@
       integer itracer    ! index of tracer array to use in computation
  
       real dzall(nzlk)   ! thickness of each lake and sediment layer [m]
-      real ztop(nzlk)    ! depth of each lake and sediment layer at top [m]	  
+      real ztop(nzlk)    ! depth of each lake and sediment layer at top [m]
+      real area_top(nzlk)! area of each lake layer at top [m]
+      real area_bot(nzlk)! area of each lake layer at bottom [m]
+      real area_mid(nzlk)! area of each lake layer at middle [m]
       real*8 tall(nzlk)  ! starting tracer value of layers [ppt or per mil]
       real dei(nzlk)     ! tracer conductivity at layer interface [m2/s] 
       real dztop         ! distance from one layer node to the layer node above [m]
@@ -25,18 +28,29 @@
       real*8 d(nzlk)     ! "d" vector for tridiagonal matrix [ppt or per mil]
       real*8 tnew(nzlk)  ! new layer tracer value from Crank-Nicolson [ppt or per mil]
       integer k          ! counter for looping through layers
+      integer ktop       ! index value of lake surface
 
-      do k = 1, nzlk
-        if (k.eq.1) then
+      ktop = max_dep - nzlk   ! used to determine lake area from input bathymetry
+      do k = 1, nzlk          ! set up lake depth and area arrays
+        area_mid(k) = area(k+ktop)
+        if (k.eq.1) then      ! top lake layer
           dzall(k) = surf
-        else
-          dzall(k) = dz
+          ztop(k) = 0.
+          area_top(k) = area(k+ktop)
+          area_bot(k) = (area(k+ktop) + area(k+ktop+1))/2.
         endif
-      enddo
-
-      ztop(1) = 0.
-      do k = 2, nzlk
-        ztop(k) = ztop(k-1) + dzall(k-1)
+        if (k.gt.1.and.k.lt.nzlk) then
+          dzall(k) = dz
+          ztop(k) = ztop(k-1) + dzall(k-1)
+          area_top(k) = (area(k+ktop) + area(k+ktop-1))/2.
+          area_bot(k) = (area(k+ktop) + area(k+ktop+1))/2.
+        endif
+        if (k.eq.nzlk) then   ! bottom lake layer
+          dzall(k) = dz
+          ztop(k) = ztop(k-1) + dzall(k-1)
+          area_top(k) = (area(k+ktop) + area(k+ktop-1))/2.
+          area_bot(k) = area(k+ktop)
+        endif
       enddo
 
 ! ************** calculate layer interface eddy conductivities ******
@@ -54,33 +68,38 @@
       do k = 1,nzlk 
         tall(k) = tracer(itracer,k)
       enddo
-	  
+
       k = 1   ! first lake layer, diffusion only to bottom
         dzbot = (dzall(k) + dzall(k+1)) / 2.
-        c(k) = -0.5 * dei(k) / dzbot * dt / dzall(k)
+        c(k) = -0.5 * (area_bot(k)/area_mid(k)) * dei(k) /              &
+                dzbot * dt / dzall(k)
         a(k) = 0.
         b(k) = 1. - c(k)  
-        d(k) = tall(k) + 0.5 * dei(k) * dt / dzall(k) *                 &
-                (tall(k+1) - tall(k)) / dzbot
+        d(k) = tall(k) + 0.5 * (area_bot(k)/area_mid(k)) * dei(k) *     &
+               dt / dzall(k) * (tall(k+1) - tall(k)) / dzbot
      
       do k = 2,nzlk-1  ! middle layers, diffusion to top and bot
         dzbot = (dzall(k) + dzall(k+1)) / 2.
         dztop = (dzall(k-1) + dzall(k)) / 2.
-        c(k) = -0.5 * dei(k) / dzbot * dt / dzall(k)  
-        a(k) = -0.5 * dei(k-1) / dztop * dt / dzall(k)  
+        c(k) = -0.5 * (area_bot(k)/area_mid(k)) * dei(k) /              &
+                dzbot * dt / dzall(k)  
+        a(k) = -0.5 * (area_top(k)/area_mid(k)) * dei(k-1) /            &
+                dztop * dt / dzall(k)
         b(k) = 1. - c(k) - a(k)
-        d(k) = tall(k) + 0.5 * dei(k) * dt / dzall(k) *                 &
-                (tall(k+1) - tall(k)) / dzbot - 0.5 * dei(k-1) *        &
+        d(k) = tall(k) + 0.5 * (area_bot(k)/area_mid(k)) * dei(k) *     &
+               dt / dzall(k) * (tall(k+1) - tall(k)) / dzbot            &
+               - 0.5 * (area_top(k)/area_mid(k)) * dei(k-1) *           &
                 dt / dzall(k) * (tall(k) - tall(k-1)) / dztop
       enddo
 
       k = nzlk ! bottom sed layer, diffusion only to top
         dztop = (dzall(k-1) + dzall(k)) / 2.
         c(k) = 0.
-        a(k) = -0.5 * dei(k-1) / dztop * dt / dzall(k)
+        a(k) = -0.5 * (area_top(k)/area_mid(k)) * dei(k-1) /            &
+               dztop * dt / dzall(k)
         b(k) = 1. - a(k)
-        d(k) = tall(k) - 0.5 * dei(k-1) * dt / dzall(k) *               &
-               (tall(k) - tall(k-1)) / dztop
+        d(k) = tall(k) - 0.5 * (area_top(k)/area_mid(k)) * dei(k-1) *   &
+               dt / dzall(k) * (tall(k) - tall(k-1)) / dztop
 
 ! ******* solve matrix and reset temp and density arrays ***************
 
