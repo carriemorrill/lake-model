@@ -101,11 +101,11 @@
         d(k) = tall(k) - 0.5 * (area_top(k)/area_mid(k)) * dei(k-1) *   &
                dt / dzall(k) * (tall(k) - tall(k-1)) / dztop
 
-! ******* solve matrix and reset temp and density arrays ***************
+! ******* solve matrix and reset tracer arrays ************************
 
        call tridiag_solve (nzlk, a, b, c, d, tnew)
   
-       do k = 1, nzlk  ! reset temps and densities
+       do k = 1, nzlk  ! reset tracer values
           tracer(itracer,k) = tnew(k)
        enddo
 
